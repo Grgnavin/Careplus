@@ -13,6 +13,9 @@ import { Input } from './ui/input'
 import { Control } from 'react-hook-form'
 import { FormFieldType } from './forms/PatientForm'
 import Image from 'next/image'
+import 'react-phone-number-input/style.css'
+import PhoneInput from 'react-phone-number-input'
+import { E164Number } from "libphonenumber-js/core"
 
 interface CustomProps {
     control: Control<any>,
@@ -30,19 +33,44 @@ interface CustomProps {
 }
 
 const RenderInput = ({ field, props }: { field: any, props: CustomProps}) => {
-    switch (props.fieldType) {
+    const { fieldType, iconAlt, iconSrc, placeholder } = props;
+    switch (fieldType) {
         case FormFieldType.INPUT:
             return (
                 <div className='flex rounded-md border border-dark-500 bg-dark-400'>
-                    {props.iconSrc && (
+                    {iconSrc && (
                         <Image 
-                            src={props.iconSrc}
+                            src={iconSrc}
+                            height={24}
+                            width={24}
+                            alt={iconAlt || 'ícon'}
+                            className='ml-2'
                         />
                     )}
+                    <FormControl>
+                        <Input 
+                        placeholder={placeholder}
+                        {...field}
+                        className='shad-input border-0'
+                        />
+                    </FormControl>
                 </div>
             )
             break;
-    
+        case FormFieldType.PHONE_INPUT: 
+        return (
+            <FormControl>
+                <PhoneInput
+                    defaultCountry='US'
+                    placeholder={placeholder}
+                    international
+                    withCountryCallingCode
+                    value={field.value as E164Number | undefined}
+                    onChange={field.onChange}
+                    className='input-phone'
+                />
+            </FormControl>
+        )
         default:
             break;
     }
